@@ -16,10 +16,28 @@
 /** @type {typeof import('@adonisjs/framework/src/Route/Manager')} */
 const Route = use('Route')
 
-Route.on('/').render('welcome').as('home')
+Route.get('/', 'HomeController.index').as('home')
+
+Route.get('/posts/create', 'PostController.create')
+  .as('posts.create')
+  .middleware(['auth'])
+
+Route.post('/posts/:slug/reply', 'PostReplyController.store')
+  .as('posts.reply.store')
+  .middleware(['auth'])
+
+Route.get('/posts/:slug', 'PostController.show')
+  .as('posts.show')
+  .middleware(['auth'])
+
+Route.post('/posts', 'PostController.store')
+  .validator('StorePost')
+  .as('posts.store')
+  .middleware(['auth'])
 
 Route.get('/auth/register', 'Auth/RegisterController.index')
   .as('auth.register')
+  .middleware(['guest'])
 
 Route.post('/auth/register', 'Auth/RegisterController.register')
   .validator('RegisterUser')
@@ -27,6 +45,7 @@ Route.post('/auth/register', 'Auth/RegisterController.register')
 
 Route.get('/auth/login', 'Auth/LoginController.index')
   .as('auth.login')
+  .middleware(['guest'])
 
 Route.post('/auth/login', 'Auth/LoginController.login')
   .validator('LoginUser')
